@@ -15,7 +15,7 @@
   \**********************/
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("__webpack_require__.e(/*! import() */ \"index_js\").then(__webpack_require__.bind(__webpack_require__, /*! ./index */ \"./index.js\")).catch(e => console.error(\"Error: \", e))\n\n\n//# sourceURL=webpack://www/./bootstrap.js?");
+eval("__webpack_require__.e(/*! import() */ \"index_ts\").then(__webpack_require__.bind(__webpack_require__, /*! ./index.ts */ \"./index.ts\")).catch(e => console.error(\"Error: \", e))\n\n\n//# sourceURL=webpack://www/./bootstrap.js?");
 
 /***/ })
 

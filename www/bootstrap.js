@@ -1,1 +1,1 @@
-import("./index").catch(e => console.error("Error: ", e))
+import("./index.ts").catch(e => console.error("Error: ", e))
