@@ -64,11 +64,11 @@ impl World {
             self.snake.body[0].0 = (next_row * self.width) + col;
         }
         if self.snake.direction == Direction::Left {
-            let next_column = col - 1;
+            let next_column = (col - 1) % self.width;
             self.snake.body[0].0 = (row * self.width) + next_column;
         }
         if self.snake.direction == Direction::Right {
-            let next_column = col + 1;
+            let next_column = (col + 1) % self.width;
             self.snake.body[0].0 = (row * self.width) + next_column;
         }
     }
