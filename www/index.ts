@@ -1,4 +1,4 @@
-import init, { World } from "snake_game";
+import init, { World, Direction } from "snake_game";
 init().then(_ => {
     const CELL_SIZE = 20;
     const WORLD_WIDTH = 8;
@@ -9,6 +9,28 @@ init().then(_ => {
     const context = canvas.getContext("2d");
     canvas.height = WORLD_WIDTH * CELL_SIZE;
     canvas.width = WORLD_WIDTH * CELL_SIZE;
+
+    document.addEventListener("keydown", (e) => {
+        switch (e.code) {
+            case "ArrowUp":
+                console.log("moving up");
+                world.change_direction(Direction.Up);
+                break;
+            case "ArrowDown":
+                console.log("moving down");
+                world.change_direction(Direction.Down);
+                break;
+            case "ArrowLeft":
+                console.log("moving left");
+                world.change_direction(Direction.Left);
+                break;
+            case "ArrowRight":
+                console.log("moving right");
+                world.change_direction(Direction.Right);
+                break;
+            default: console.log("Invalid key");
+        }
+    })
 
     function drawWorld() {
         context.beginPath();
@@ -26,8 +48,9 @@ init().then(_ => {
     }
 
     function drawSnake() {
-        const col = SNAKE_SPAWN_INDEX % WORLD_WIDTH;
-        const row = Math.floor(SNAKE_SPAWN_INDEX / WORLD_WIDTH);
+        const snakeIndex = world.snake_head();
+        const col = snakeIndex % WORLD_WIDTH;
+        const row = Math.floor(snakeIndex / WORLD_WIDTH);
 
         context.beginPath();
         context.fillRect(
