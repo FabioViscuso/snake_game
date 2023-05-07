@@ -1,4 +1,4 @@
-import init, { World, Direction } from "snake_game";
+import init, { World, Direction, GameStatus } from "snake_game";
 import { random } from "./utils/random";
 
 init().then(wasm => {
@@ -17,6 +17,8 @@ init().then(wasm => {
     // UI -- Bindings
     const button = document.getElementById('game-panel__control');
     const statusTextLabel = document.getElementById('game-panel__info__status');
+    const pointsCounter = document.getElementById('game-panel__score__points');
+    drawPoints();
     drawStatus();
 
     // UI -- Button events
@@ -33,26 +35,31 @@ init().then(wasm => {
     })
 
     document.addEventListener("keydown", (e) => {
-        switch (e.code) {
-            case "ArrowUp":
-                console.log("moving up");
-                world.change_direction(Direction.Up);
-                break;
-            case "ArrowDown":
-                console.log("moving down");
-                world.change_direction(Direction.Down);
-                break;
-            case "ArrowLeft":
-                console.log("moving left");
-                world.change_direction(Direction.Left);
-                break;
-            case "ArrowRight":
-                console.log("moving right");
-                world.change_direction(Direction.Right);
-                break;
-            default: console.log("Invalid key");
+        const key = e.code;
+        if (key === "ArrowUp" || key === "KeyW" ) {
+            console.log("moving up");
+            world.change_direction(Direction.Up);
+        }
+        else if (key === "ArrowDown" || key === "KeyS") {
+            console.log("moving down");
+            world.change_direction(Direction.Down);
+        }
+        else if (key === "ArrowLeft" || key === "KeyA") {
+            console.log("moving left");
+            world.change_direction(Direction.Left);
+        }
+        else if (key === "ArrowRight" || key === "KeyD") {
+            console.log("moving right");
+            world.change_direction(Direction.Right);
+        }
+        else {
+            console.log("Invalid key");
         }
     })
+
+    function drawPoints() {
+        pointsCounter.textContent = String(world.points());
+    }
 
     function drawStatus() {
         statusTextLabel.textContent = world.game_status_tostring();
@@ -117,9 +124,18 @@ init().then(wasm => {
         drawSnake();
         drawReward();
         drawStatus();
+        drawPoints();
     }
 
     function gameLoop() {
+        const gameStatus = world.game_status();
+        if (gameStatus === GameStatus.Won) {
+            button.textContent = "Another round?";
+            return;
+        } else if (gameStatus === GameStatus.Lost) {
+            button.textContent = "Try again!";
+            return;
+        }
         const refreshSpeedFPS = 3;
         setTimeout(() => {
             context.clearRect(0, 0, canvas.width, canvas.height);

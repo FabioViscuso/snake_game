@@ -57,8 +57,9 @@ pub struct World {
     size: usize,
     snake: Snake,
     next_cell: Option<SnakeCell>,
-    reward_cell: usize,
-    status: Option<GameStatus>
+    reward_cell: Option<usize>,
+    status: Option<GameStatus>,
+    points: usize,
 }
 
 #[wasm_bindgen]
@@ -75,6 +76,7 @@ impl World {
             snake,
             next_cell: None,
             status: None,
+            points: 0,
         }
     }
 
@@ -84,6 +86,10 @@ impl World {
 
     pub fn game_status(&self) -> Option<GameStatus> {
         self.status
+    }
+
+    pub fn points(&self) -> usize {
+        self.points
     }
 
     pub fn game_status_tostring(&self) -> String {
@@ -155,10 +161,12 @@ impl World {
                     self.status = Some(GameStatus::Lost);
                 }
 
-                if self.reward_cell == self.snake_head() {
+                if self.reward_cell == Some(self.snake_head()) {
                     if self.get_snake_lenght() < self.size {
+                        self.points += 1;
                         self.reward_cell = World::generate_reward_cell(self.size, &self.snake.body);
                     } else {
+                        self.reward_cell = None;
                         self.status = Some(GameStatus::Won);
                     }
 
@@ -215,11 +223,11 @@ impl World {
         }
     }
 
-    pub fn reward_cell(&self) -> usize {
+    pub fn reward_cell(&self) -> Option<usize> {
         self.reward_cell
     }
 
-    fn generate_reward_cell(max: usize, snake_body: &Vec<SnakeCell>) -> usize {
+    fn generate_reward_cell(max: usize, snake_body: &Vec<SnakeCell>) -> Option<usize> {
         let mut reward_cell;
 
         loop {
@@ -229,6 +237,6 @@ impl World {
             }
         }
 
-        reward_cell
+        Some(reward_cell)
     }
 }
