@@ -1,7 +1,7 @@
-import init, { World, Direction, GameStatus } from "snake_game";
+import init, { World, Direction, GameStatus, InitOutput } from "snake_game";
 import { random } from "./utils/random";
 
-init().then(wasm => {
+init().then((wasm: InitOutput) => {
     // Build world
     const CELL_SIZE = 20;
     const WORLD_WIDTH = 8;
