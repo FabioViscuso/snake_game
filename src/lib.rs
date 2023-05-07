@@ -58,38 +58,35 @@ impl World {
         let width = width;
         let size = width * width;
         let snake = Snake::new(snake_spawn_index, 3);
-        let mut reward_cell;
-        
-        loop {
-            reward_cell = random(size);
-            if !snake.body.contains(&SnakeCell(reward_cell)) {
-                break;
-            }
-        }
 
         World {
             width,
             size,
+            reward_cell: World::generate_reward_cell(size, &snake.body),
             snake,
             next_cell: None,
-            reward_cell
         }
     }
+
     pub fn width(&self) -> usize {
         self.width
     }
+
     pub fn snake_head(&self) -> usize {
         self.snake.body[0].0
     }
+
     // In this fn we're using raw pointer to escape borrowing rules
     // This is because we can't export a Vec to JS
     // and we know that the data referred to by the pointer will always be there
     pub fn snake_cells(&self) -> *const SnakeCell {
         self.snake.body.as_ptr()
     }
+
     pub fn get_snake_lenght(&self) -> usize {
         self.snake.body.len()
     }
+
     pub fn change_direction(&mut self, direction: Direction) {
         let next_cell = self.generate_next_snake_cell(&direction);
         if self.snake.body[1].0 == next_cell.0 {
@@ -98,6 +95,7 @@ impl World {
         self.next_cell = Some(next_cell);
         self.snake.direction = direction;
     }
+
     pub fn step(&mut self) {
         let temp_array = self.snake.body.clone();
 
@@ -111,13 +109,23 @@ impl World {
             }
         }
 
-        let length = self.snake.body.len();
-
         // We start from 1 because 0 is the head, we are interested in the body
-        for i in 1..length {
+        for i in 1..self.get_snake_lenght() {
             self.snake.body[i] = SnakeCell(temp_array[i - 1].0)
         }
+
+        if self.reward_cell == self.snake_head() {
+            if self.get_snake_lenght() < self.size {
+                self.reward_cell = World::generate_reward_cell(self.size, &self.snake.body);
+            } else {
+                //momentary
+                self.reward_cell = 999;
+            }
+
+            self.snake.body.push(SnakeCell(self.snake.body[1].0));
+        }
     }
+
     fn generate_next_snake_cell(&self, direction: &Direction) -> SnakeCell {
         let snake_head_index = self.snake_head();
         let row = snake_head_index / self.width;
@@ -157,7 +165,21 @@ impl World {
             },
         }
     }
+
     pub fn reward_cell(&self) -> usize {
         self.reward_cell
+    }
+
+    fn generate_reward_cell(max: usize, snake_body: &Vec<SnakeCell>) -> usize {
+        let mut reward_cell;
+
+        loop {
+            reward_cell = random(max);
+            if !snake_body.contains(&SnakeCell(reward_cell)) {
+                break;
+            }
+        }
+
+        reward_cell
     }
 }

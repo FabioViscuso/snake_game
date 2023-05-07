@@ -8,10 +8,6 @@ init().then(wasm => {
     const SNAKE_SPAWN_INDEX = random(WORLD_WIDTH * WORLD_WIDTH);
     const world = World.new(WORLD_WIDTH, SNAKE_SPAWN_INDEX);
 
-    // Build snake
-    const snakeCellPtr = world.snake_cells();
-    const snakeLenght = world.get_snake_lenght();
-
     // Build canvas
     const canvas = document.getElementById('snake-game-canvas') as HTMLCanvasElement;
     const context = canvas.getContext("2d");
@@ -58,16 +54,16 @@ init().then(wasm => {
     function drawSnake() {
         const snakeCells = new Uint32Array(
             wasm.memory.buffer,
-            snakeCellPtr,
-            snakeLenght
+            world.snake_cells(),
+            world.get_snake_lenght()
         );
 
         snakeCells.forEach((cell, i) => {
             const col = cell % WORLD_WIDTH;
             const row = Math.floor(cell / WORLD_WIDTH);
 
-            context.beginPath();
             context.fillStyle = i === 0 ? "#DBF9B8" : "#87A878"
+            context.beginPath();
             context.fillRect(
                 col * CELL_SIZE,
                 row * CELL_SIZE,
@@ -83,8 +79,8 @@ init().then(wasm => {
         const col = rewardCellIndex % WORLD_WIDTH;
         const row = Math.floor(rewardCellIndex / WORLD_WIDTH);
 
-        context.beginPath();
         context.fillStyle = "#FFD700";
+        context.beginPath();
         context.fillRect(
             col * CELL_SIZE,
             row * CELL_SIZE,
@@ -95,8 +91,8 @@ init().then(wasm => {
     }
 
     function drawActors() {
-        drawSnake();
         drawWorld();
+        drawSnake();
         drawReward();
     }
 
