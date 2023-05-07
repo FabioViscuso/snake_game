@@ -44,12 +44,21 @@ impl Snake {
 }
 
 #[wasm_bindgen]
+#[derive(Clone, Copy)]
+pub enum GameStatus {
+    Won,
+    Lost,
+    Playing
+}
+
+#[wasm_bindgen]
 pub struct World {
     width: usize,
     size: usize,
     snake: Snake,
     next_cell: Option<SnakeCell>,
-    reward_cell: usize
+    reward_cell: usize,
+    status: Option<GameStatus>
 }
 
 #[wasm_bindgen]
@@ -65,6 +74,32 @@ impl World {
             reward_cell: World::generate_reward_cell(size, &snake.body),
             snake,
             next_cell: None,
+            status: None,
+        }
+    }
+
+    pub fn start_game(&mut self) {
+        self.status = Some(GameStatus::Playing);
+    }
+
+    pub fn game_status(&self) -> Option<GameStatus> {
+        self.status
+    }
+
+    pub fn game_status_tostring(&self) -> String {
+        match self.game_status() {
+            Some(GameStatus::Playing) => {
+                return String::from("Playing");
+            },
+            Some(GameStatus::Won) => {
+                return String::from("You won! Congrats!");
+            },
+            Some(GameStatus::Lost) => {
+                return String::from("You lost :( Try again!");
+            },
+            None => {
+                return String::from("Ready");
+            },
         }
     }
 
@@ -99,30 +134,41 @@ impl World {
     pub fn step(&mut self) {
         let temp_array = self.snake.body.clone();
 
-        match self.next_cell {
-            Some(cell) => {
-                self.snake.body[0] = cell;
-                self.next_cell = None;
+        match self.status {
+            Some(GameStatus::Playing) => {
+                match self.next_cell {
+                    Some(cell) => {
+                        self.snake.body[0] = cell;
+                        self.next_cell = None;
+                    },
+                    None => {
+                        self.snake.body[0] = self.generate_next_snake_cell(&self.snake.direction);
+                    }
+                }
+
+                // We start from 1 because 0 is the head, we are interested in the body
+                for i in 1..self.get_snake_lenght() {
+                    self.snake.body[i] = SnakeCell(temp_array[i - 1].0)
+                }
+
+                if self.reward_cell == self.snake_head() {
+                    if self.get_snake_lenght() < self.size {
+                        self.reward_cell = World::generate_reward_cell(self.size, &self.snake.body);
+                    } else {
+                        //momentary
+                        self.reward_cell = 999;
+                    }
+
+                    self.snake.body.push(SnakeCell(self.snake.body[1].0));
+                }
             },
-            None => {
-                self.snake.body[0] = self.generate_next_snake_cell(&self.snake.direction);
-            }
-        }
+            Some(GameStatus::Won) => {
 
-        // We start from 1 because 0 is the head, we are interested in the body
-        for i in 1..self.get_snake_lenght() {
-            self.snake.body[i] = SnakeCell(temp_array[i - 1].0)
-        }
+            },
+            Some(GameStatus::Lost) => {
 
-        if self.reward_cell == self.snake_head() {
-            if self.get_snake_lenght() < self.size {
-                self.reward_cell = World::generate_reward_cell(self.size, &self.snake.body);
-            } else {
-                //momentary
-                self.reward_cell = 999;
-            }
-
-            self.snake.body.push(SnakeCell(self.snake.body[1].0));
+            },
+            _ => {}
         }
     }
 

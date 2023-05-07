@@ -14,6 +14,26 @@ init().then(wasm => {
     canvas.height = WORLD_WIDTH * CELL_SIZE;
     canvas.width = WORLD_WIDTH * CELL_SIZE;
 
+    // UI
+
+    // Bindings
+    const button = document.getElementById('game-panel__control');
+    const statusTextLabel = document.getElementById('game-panel__info__status');
+    statusTextLabel.textContent = world.game_status_tostring()
+
+    // Button events
+    button.addEventListener('click', () => {
+        const gameStatus = world.game_status();
+        if (gameStatus === undefined) {
+            world.start_game();
+            statusTextLabel.textContent = world.game_status_tostring();
+            button.textContent = "Stop";
+            gameLoop();
+        } else {
+            location.reload();
+        }
+    })
+
     document.addEventListener("keydown", (e) => {
         switch (e.code) {
             case "ArrowUp":
@@ -96,16 +116,15 @@ init().then(wasm => {
         drawReward();
     }
 
-    function updateGame() {
+    function gameLoop() {
         const refreshSpeedFPS = 3;
         setTimeout(() => {
             context.clearRect(0, 0, canvas.width, canvas.height);
             world.step();
             drawActors();
-            requestAnimationFrame(updateGame);
+            requestAnimationFrame(gameLoop);
         }, 1000 / refreshSpeedFPS)
     }
 
     drawActors();
-    updateGame();
 })
