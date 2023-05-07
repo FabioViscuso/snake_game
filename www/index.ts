@@ -14,19 +14,17 @@ init().then(wasm => {
     canvas.height = WORLD_WIDTH * CELL_SIZE;
     canvas.width = WORLD_WIDTH * CELL_SIZE;
 
-    // UI
-
-    // Bindings
+    // UI -- Bindings
     const button = document.getElementById('game-panel__control');
     const statusTextLabel = document.getElementById('game-panel__info__status');
-    statusTextLabel.textContent = world.game_status_tostring()
+    drawStatus();
 
-    // Button events
+    // UI -- Button events
     button.addEventListener('click', () => {
         const gameStatus = world.game_status();
         if (gameStatus === undefined) {
             world.start_game();
-            statusTextLabel.textContent = world.game_status_tostring();
+            drawStatus();
             button.textContent = "Stop";
             gameLoop();
         } else {
@@ -55,6 +53,10 @@ init().then(wasm => {
             default: console.log("Invalid key");
         }
     })
+
+    function drawStatus() {
+        statusTextLabel.textContent = world.game_status_tostring();
+    }
 
     function drawWorld() {
         context.beginPath();
@@ -114,6 +116,7 @@ init().then(wasm => {
         drawWorld();
         drawSnake();
         drawReward();
+        drawStatus();
     }
 
     function gameLoop() {

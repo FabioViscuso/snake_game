@@ -151,12 +151,15 @@ impl World {
                     self.snake.body[i] = SnakeCell(temp_array[i - 1].0)
                 }
 
+                if self.snake.body[1..self.get_snake_lenght()].contains(&self.snake.body[0]) {
+                    self.status = Some(GameStatus::Lost);
+                }
+
                 if self.reward_cell == self.snake_head() {
                     if self.get_snake_lenght() < self.size {
                         self.reward_cell = World::generate_reward_cell(self.size, &self.snake.body);
                     } else {
-                        //momentary
-                        self.reward_cell = 999;
+                        self.status = Some(GameStatus::Won);
                     }
 
                     self.snake.body.push(SnakeCell(self.snake.body[1].0));
