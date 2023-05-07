@@ -17,13 +17,15 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, "public"),
-        filename: "bootstrap.js"
+        filename: "bootstrap.js",
+        clean: true
     },
     mode: "development",
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
-                { from: "./index.html", to: "./"}
+                { from: "./index.html", to: "./"},
+                { from: "./style.css", to: "./"}
             ]
         })
     ]
