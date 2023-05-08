@@ -14,11 +14,14 @@ html, body {
     justify-content: center;
     align-items: center;
 }
-#game-panel__info {
+#game-panel__info,
+#game-panel__score {
+    width: 100%;
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row nowrap;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 }
 #game-panel__control {
     margin-bottom: 3rem;
