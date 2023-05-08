@@ -34,22 +34,19 @@ init().then((wasm: InitOutput) => {
         }
     })
 
+    // UI -- Keyboard events
     document.addEventListener("keydown", (e) => {
         const key = e.code;
         if (key === "ArrowUp" || key === "KeyW" ) {
-            console.log("moving up");
             world.change_direction(Direction.Up);
         }
         else if (key === "ArrowDown" || key === "KeyS") {
-            console.log("moving down");
             world.change_direction(Direction.Down);
         }
         else if (key === "ArrowLeft" || key === "KeyA") {
-            console.log("moving left");
             world.change_direction(Direction.Left);
         }
         else if (key === "ArrowRight" || key === "KeyD") {
-            console.log("moving right");
             world.change_direction(Direction.Right);
         }
         else {
@@ -57,6 +54,7 @@ init().then((wasm: InitOutput) => {
         }
     })
 
+    // UI -- Mobile swipe events
     document.addEventListener("touchstart", startTouch, false);
     document.addEventListener("touchmove", moveTouch, false);
 
@@ -70,44 +68,44 @@ init().then((wasm: InitOutput) => {
     };
 
     function moveTouch(e: TouchEvent) {
-      if (initialX === null) {
-        return;
-      }
-
-      if (initialY === null) {
-        return;
-      }
-
-      var currentX = e.touches[0].clientX;
-      var currentY = e.touches[0].clientY;
-
-      var diffX = initialX - currentX;
-      var diffY = initialY - currentY;
-
-      if (Math.abs(diffX) > Math.abs(diffY)) {
-        // sliding horizontally
-        if (diffX > 0) {
-          // swiped left
-          world.change_direction(Direction.Left);
-        } else {
-          // swiped right
-          world.change_direction(Direction.Right);
+        if (initialX === null) {
+            return;
         }
-      } else {
-        // sliding vertically
-        if (diffY > 0) {
-          // swiped up
-          world.change_direction(Direction.Up);
-        } else {
-          // swiped down
-          world.change_direction(Direction.Down);
+
+        if (initialY === null) {
+            return;
         }
-      }
 
-      initialX = null;
-      initialY = null;
+        let currentX = e.touches[0].clientX;
+        let currentY = e.touches[0].clientY;
 
-      e.preventDefault();
+        let diffX = initialX - currentX;
+        let diffY = initialY - currentY;
+
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            // sliding horizontally
+            if (diffX > 0) {
+                // swiped left
+                world.change_direction(Direction.Left);
+            } else {
+                // swiped right
+                world.change_direction(Direction.Right);
+            }
+        } else {
+            // sliding vertically
+            if (diffY > 0) {
+                // swiped up
+                world.change_direction(Direction.Up);
+            } else {
+                // swiped down
+                world.change_direction(Direction.Down);
+            }
+        }
+
+        initialX = null;
+        initialY = null;
+
+        e.preventDefault();
     };
 
     function drawPoints() {
