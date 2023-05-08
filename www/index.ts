@@ -57,6 +57,59 @@ init().then((wasm: InitOutput) => {
         }
     })
 
+    document.addEventListener("touchstart", startTouch, false);
+    document.addEventListener("touchmove", moveTouch, false);
+
+    // Swipe Up / Down / Left / Right
+    let initialX: number | null = null;
+    let initialY: number | null = null;
+
+    function startTouch(e: TouchEvent) {
+      initialX = e.touches[0].clientX;
+      initialY = e.touches[0].clientY;
+    };
+
+    function moveTouch(e: TouchEvent) {
+      if (initialX === null) {
+        return;
+      }
+
+      if (initialY === null) {
+        return;
+      }
+
+      var currentX = e.touches[0].clientX;
+      var currentY = e.touches[0].clientY;
+
+      var diffX = initialX - currentX;
+      var diffY = initialY - currentY;
+
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        // sliding horizontally
+        if (diffX > 0) {
+          // swiped left
+          world.change_direction(Direction.Left);
+        } else {
+          // swiped right
+          world.change_direction(Direction.Right);
+        }
+      } else {
+        // sliding vertically
+        if (diffY > 0) {
+          // swiped up
+          world.change_direction(Direction.Up);
+        } else {
+          // swiped down
+          world.change_direction(Direction.Down);
+        }
+      }
+
+      initialX = null;
+      initialY = null;
+
+      e.preventDefault();
+    };
+
     function drawPoints() {
         pointsCounter.textContent = String(world.points());
     }
